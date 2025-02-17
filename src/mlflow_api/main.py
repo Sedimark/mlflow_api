@@ -3,9 +3,9 @@ import uvicorn
 from fastapi import FastAPI, Response, UploadFile
 from starlette.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-from mlflow_client import Client
+from mlflow_api.mlflow_client import Client
 from pydantic import BaseModel
-from schemas import Models, Parameters, Metrics, Dataset, Images, Versions
+from mlflow_api.schemas import Models, Parameters, Metrics, Dataset, Images, Versions
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -127,5 +127,9 @@ async def model_register(register: Register):
     return JSONResponse(status_code=200, content=result.name)
 
 
-if __name__ == '__main__':
+def main() -> None:
     uvicorn.run(app, host="0.0.0.0")
+
+
+if __name__ == '__main__':
+    main()

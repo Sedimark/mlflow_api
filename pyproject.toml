@@ -1,0 +1,44 @@
+[project]
+name = "mlflow-api"
+version = "0.1.0"
+description = "SEDIMARK API for interacting with MLFlow."
+readme = "README.md"
+requires-python = ">=3.12.0"
+dependencies = [
+    "boto3~=1.33.11",
+    "fastapi~=0.103.1",
+    "mlflow>=2.20.2",
+    "numpy>=2.2.3",
+    "pandas>=2.2.3",
+    "pydantic~=1.10.13",
+    "python-dotenv~=1.0.0",
+    "python-multipart==0.0.6",
+    "pyyaml~=6.0.1",
+    "redis~=5.0.1",
+    "requests~=2.31.0",
+    "starlette~=0.27.0",
+    "torch>=2.6.0 ; python_full_version >= '3.12'",
+    "uvicorn==0.23.2",
+    "markupsafe==3.0.2",
+]
+
+[project.scripts]
+mlflow_api = "mlflow_api.main:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv.sources]
+torch = { index = "pytorch" }
+numpy = { index = "default" }
+requests = { index = "default" }
+markupsafe = { index = "default" }
+
+[[tool.uv.index]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/cpu"
+
+[[tool.uv.index]]
+name = "default"
+url = "https://pypi.org/simple"

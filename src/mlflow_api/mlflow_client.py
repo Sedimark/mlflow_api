@@ -9,7 +9,7 @@ from datetime import datetime
 from json import JSONDecodeError
 from io import StringIO, BytesIO
 from mlflow import MlflowClient, MlflowException
-from models import model_handlers
+from mlflow_api.models import model_handlers
 
 def flatten_dict(d: dict, parent_key='', sep='_'):
     items = []

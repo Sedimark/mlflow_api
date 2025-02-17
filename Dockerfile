@@ -1,19 +1,21 @@
-FROM python:3.11-slim
+FROM python:3.12-slim AS builder
 
 WORKDIR /app
 
-RUN apt-get update && \
-    apt-get install -y \
-        build-essential \
-        make \
-        gcc \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
+COPY src /app/src
+COPY pyproject.toml .
+COPY README.md .
 
-COPY . .
+RUN apt-get update && apt-get install -y gcc && pip install uv && uv build 
 
-RUN pip install -r requirements.txt
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY --from=builder /app/dist/*.whl /app/
+
+RUN pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu *.whl
 
 EXPOSE 8000
 
-CMD ["python3", "main.py"]
+CMD ["mlflow_api"]
