@@ -144,7 +144,7 @@ class Client:
         artifacts = [artifact.path for artifact in artifacts if "model" in artifact.path and artifact.is_dir]
 
         content = mlflow.artifacts.load_text(f"runs:/{run_id}/{artifacts[0]}/MLmodel")
-
+               
         content = yaml.safe_load(StringIO(content))
 
         model_type = content["flavors"]["python_function"]["loader_module"].split(".")[1]

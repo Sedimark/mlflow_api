@@ -20,6 +20,8 @@ dependencies = [
     "torch>=2.6.0 ; python_full_version >= '3.12'",
     "uvicorn==0.23.2",
     "markupsafe==3.0.2",
+    "lightgbm>=4.6.0",
+    "xgboost>=2.1.4",
 ]
 
 [project.scripts]

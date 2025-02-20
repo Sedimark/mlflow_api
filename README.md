@@ -19,13 +19,16 @@
     
   ### Running
     
-    ```bash
-    uv build .
-    cd dist
-    pip install *.whl
-    mlflow_api
-    ```
+    - First run
 
+      ```bash
+      uv run src/mlflow_api/main.py
+      ```
+    - All the other runs
+
+      ```bash
+      uv run mlflow_api
+      ```
 - Docker
   ### Environment Variables
   - MLFLOW_TRACKING_USERNAME - The username for the local MLFlow instance
@@ -36,9 +39,14 @@
   - MLFLOW_TRACKING_INSECURE_TLS - The type of connection for the local MLFlow instance (true/false)
   - MLFLOW_TRACKING_URI - The url for the local MLFlow instance
   
+  ### Building the image
   ```bash
   docker build -t mlflow_api .
-  docker run -itd -p 8000:8000 \
+  ```
+
+  ### Running
+  ```bash
+    docker run -itd -p 8000:8000 \
   -e MLFLOW_TRACKING_USERNAME=admin \
   -e MLFLOW_TRACKING_PASSWORD=password \
   -e AWS_ACCESS_KEY_ID=<key> \
