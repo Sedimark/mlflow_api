@@ -37,7 +37,7 @@ class Client:
 
     def models(self):
         returns = []
-        models_list = self.client.search_registered_models("tag.mage_model = 'true'")
+        models_list = self.client.search_registered_models()
 
         if not models_list:
             return None
