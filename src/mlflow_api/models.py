@@ -79,11 +79,11 @@ class KerasModelHandler(BaseModelHandler):
     def save_model(self, model_uri):
         self.load_model(model_uri)
 
-        with tempfile.NamedTemporaryFile(suffix=".h5", delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(suffix=".keras", delete=False) as tmp:
             temp_path = tmp.name
 
         try:
-            self.model.save(temp_path, save_format=".h5")
+            keras.saving.save_model(self.model, temp_path)
 
             with open(temp_path, 'rb') as f:
                 buffer = io.BytesIO(f.read())
@@ -114,7 +114,10 @@ class PytorchModelHandler(BaseModelHandler):
             temp_path = tmp.name
 
         try:
-            torch.jit.save(self.model, temp_path)
+            if not hasattr(self.model, "save"):
+                self.model = torch.jit.script(self.model)
+            
+            self.model.save(temp_path)
             with open(temp_path, 'rb') as f:
                 buffer = io.BytesIO(f.read())
 
