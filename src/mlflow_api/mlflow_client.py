@@ -37,16 +37,20 @@ class Client:
 
     def models(self):
         returns = []
-        models_list = self.client.search_registered_models()
-
-        if not models_list:
+        try:
+            models_list = self.client.search_registered_models()
+        except Exception:
             return None
+    
+        if len(models_list) == 0:
+            return []
 
         for model in models_list:
             timestamp_s = model.creation_timestamp / 1000
             returns.append({
                 "name": model.name,
-                "creation_date": datetime.utcfromtimestamp(timestamp_s).strftime('%Y-%m-%d %H:%M:%S')
+                "creation_date": datetime.utcfromtimestamp(timestamp_s).strftime('%Y-%m-%d %H:%M:%S'),
+                "framework": model.tags.get("framework", "")
             })
 
         return returns
