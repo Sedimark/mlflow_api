@@ -1,12 +1,15 @@
 import pandas as pd
 import uvicorn
 from fastapi import FastAPI, Response, UploadFile
+from fastapi.exception_handlers import HTTPException
 from starlette.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from mlflow_api.mlflow_client import Client
 from pydantic import BaseModel
 from mlflow_api.schemas import Models, Parameters, Metrics, Dataset, Images, Versions
 from dotenv import load_dotenv
+import torch.optim as optim
+import torch.nn as nn
 
 load_dotenv()
 
@@ -103,6 +106,53 @@ async def model_package(name: str):
         media_type="application/octet-stream",
         headers={"Content-Disposition": f"attachment; filename={name}.bin"}
     )
+
+
+@app.get("/optimizers/{framework}")
+async def optimizers(framework: str):
+    if framework not in ["torch", "keras"]:
+        raise HTTPException(400, "Allowed frameworks: ['torch', 'keras']")
+
+    if framework == "torch":
+        opt = [op for op in dir(optim) if "_" not in op]
+        return JSONResponse(opt)
+    else:
+        return JSONResponse([
+            "SGD",
+            "RMSprop",
+            "Adagrad",
+            "Adadelta",
+            "Adam",
+            "Adamax",
+            "Nadam",
+            "Ftrl"
+        ])
+
+
+@app.get("/losses/{framework}")
+async def losses(framework: str):
+    if framework not in ["torch", "keras"]:
+        raise HTTPException(400, "Allowed frameworks: ['torch', 'keras']")
+
+    if framework == "torch":
+        return JSONResponse(["L1Loss", "MSELoss", "CrossEntropyLoss", "CTCLoss", "NLLLoss", "PoissonNLLLoss", "GaussianNLLLoss", "KLDivLoss", "BCELoss", "BCEWithLogitsLoss", "MarginRankingLoss", "HingeEmbeddingLoss", "MultiLabelMarginLoss", "HuberLoss", "SmoothL1Loss", "SoftMarginLoss", "MultiLabelSoftMarginLoss", "CosineEmbeddingLoss", "MultiMarginLoss", "TripletMarginLoss", "TripletMarginWithDistanceLoss"])
+    else:
+        return JSONResponse([
+            "mean_squared_error",     
+            "mean_absolute_error",            
+            "mean_absolute_percentage_error", 
+            "mean_squared_logarithmic_error",  
+            "categorical_crossentropy",
+            "sparse_categorical_crossentropy",
+            "binary_crossentropy",
+            "hinge",
+            "squared_hinge",
+            "categorical_hinge",
+            "logcosh",
+            "kullback_leibler_divergence",     
+            "poisson",
+            "cosine_similarity"
+        ])
 
 
 @app.post("/model/predict")
