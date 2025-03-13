@@ -11,16 +11,14 @@ dependencies = [
     "pandas>=2.2.3",
     "pydantic~=1.10.13",
     "python-dotenv~=1.0.0",
-    "python-multipart==0.0.6",
+    "python-multipart==0.0.18",
     "pyyaml~=6.0.1",
-    "redis~=5.0.1",
     "requests~=2.31.0",
     "starlette~=0.27.0",
     "torch>=2.6.0 ; python_full_version >= '3.12'",
     "uvicorn==0.23.2",
     "markupsafe==3.0.2",
     "lightgbm>=4.6.0",
-    "xgboost>=2.1.4",
 ]
 
 [project.scripts]
