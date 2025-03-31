@@ -24,7 +24,7 @@ jobs:
         with:
           image: mlflow-api
           cache: "false"
-          tag: development
+          tag: production
           path: .
           debug: true
           registry: ghcr.io
