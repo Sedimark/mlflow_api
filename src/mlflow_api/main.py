@@ -9,7 +9,9 @@ from pydantic import BaseModel
 from mlflow_api.schemas import Models, Parameters, Metrics, Dataset, Images, Versions
 from dotenv import load_dotenv
 import torch.optim as optim
-import torch.nn as nn
+from typing import Optional
+import tempfile
+import os
 
 load_dotenv()
 
@@ -106,6 +108,46 @@ async def model_package(name: str):
         media_type="application/octet-stream",
         headers={"Content-Disposition": f"attachment; filename={name}.bin"}
     )
+
+
+@app.get("/model/export", tags=["Endpoint that exports a model version as a zip."])
+async def model_export(name: str, version: str):
+    try:
+        zip_buffer = client.model_export(name, version)
+        if zip_buffer is None:
+            return JSONResponse("Error exporting the model!", status_code=500)
+        
+        return Response(
+            content=zip_buffer.getvalue(),
+            media_type="application/zip",
+            headers={"Content-Disposition": f"attachment; filename={name}_v{version}.zip"}
+        )
+    except Exception as e:
+        return JSONResponse(f"Error exporting the model: {str(e)}", status_code=500)
+
+
+@app.post("/model/import", tags=["Endpoint that imports a model as a zip."])
+async def model_import(file: UploadFile, experiment_name: str = "Default"):
+    if file is None or not file.filename.endswith('.zip'):
+        return JSONResponse("File must be a zip file!", status_code=400)
+    
+    temp_zip_path = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix='.zip', delete=False) as temp_file:
+            temp_zip_path = temp_file.name
+            content = await file.read()
+            temp_file.write(content)
+        
+        result = client.model_import(temp_zip_path, target_experiment_name=experiment_name)
+        if result is None:
+            return JSONResponse("Error importing the model!", status_code=500)
+        
+        return JSONResponse(result)
+    except Exception as e:
+        return JSONResponse(f"Error importing the model: {str(e)}", status_code=500)
+    finally:
+        if temp_zip_path and os.path.exists(temp_zip_path):
+            os.unlink(temp_zip_path)
 
 
 @app.get("/optimizers/{framework}")
