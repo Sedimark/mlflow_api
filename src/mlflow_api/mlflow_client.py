@@ -51,11 +51,34 @@ class Client:
 
         for model in models_list:
             timestamp_s = model.creation_timestamp / 1000
-            returns.append({
+            model_info = {
                 "name": model.name,
-                "creation_date": datetime.utcfromtimestamp(timestamp_s).strftime('%Y-%m-%d %H:%M:%S'),
-                "framework": model.tags.get("framework", "")
-            })
+                "framework": model.tags.get("framework", ""),
+                "description": model.description,
+                "tags": model.tags,
+                "versions": []
+            }
+ 
+            for version in model.latest_versions:
+                timestamp_s = version.creation_timestamp / 1000
+                version_info = {
+                    "version": version.version,
+                    "creation_date": datetime.utcfromtimestamp(timestamp_s).strftime('%Y-%m-%d %H:%M:%S'),
+                    "input_examples": None,
+                    "output_examples": None,
+                }
+
+                model_uri = self.client.get_model_version_download_uri(model.name, version.version)
+                remote_model_info = mlflow.models.get_model_info(model_uri)
+                signature =remote_model_info.signature
+
+                if signature:
+                    version_info["input_examples"] = json.loads(signature.to_dict()["inputs"])
+                    version_info["output_examples"] = json.loads(signature.to_dict()["outputs"])
+                    
+                model_info["versions"].append(version_info)
+
+            returns.append(model_info)
 
         return returns
 

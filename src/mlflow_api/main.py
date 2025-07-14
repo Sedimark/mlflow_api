@@ -9,7 +9,6 @@ from pydantic import BaseModel
 from mlflow_api.schemas import Models, Parameters, Metrics, Dataset, Images, Versions
 from dotenv import load_dotenv
 import torch.optim as optim
-from typing import Optional
 import tempfile
 import os
 
