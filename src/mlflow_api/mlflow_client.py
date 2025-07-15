@@ -68,9 +68,14 @@ class Client:
                     "output_examples": None,
                 }
 
-                model_uri = self.client.get_model_version_download_uri(model.name, version.version)
+                experiment = self.client.get_experiment_by_name(os.getenv("MLFLOW_EXPERIMENT_NAME"))
+                experiment_id = 0 if experiment is None else experiment.experiment_id
+
+                model_version = self.client.get_model_version(name=model.name, version=version.version)
+                model_uri = f"s3://models/{experiment_id}/{model_version.run_id}/artifacts"
+
                 remote_model_info = mlflow.models.get_model_info(model_uri)
-                signature =remote_model_info.signature
+                signature = remote_model_info.signature
 
                 if signature:
                     version_info["input_examples"] = json.loads(signature.to_dict()["inputs"])
