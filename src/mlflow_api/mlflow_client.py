@@ -54,8 +54,6 @@ class Client:
             model_info = {
                 "name": model.name,
                 "framework": model.tags.get("framework", ""),
-                "description": model.description,
-                "tags": model.tags,
                 "versions": []
             }
  
@@ -64,15 +62,13 @@ class Client:
                 version_info = {
                     "version": version.version,
                     "creation_date": datetime.utcfromtimestamp(timestamp_s).strftime('%Y-%m-%d %H:%M:%S'),
+                    "tags": version.tags,
+                    "description": version.description,
                     "input_examples": None,
                     "output_examples": None,
                 }
 
-                experiment = self.client.get_experiment_by_name(os.getenv("MLFLOW_EXPERIMENT_NAME"))
-                experiment_id = 0 if experiment is None else experiment.experiment_id
-
-                model_version = self.client.get_model_version(name=model.name, version=version.version)
-                model_uri = f"s3://models/{experiment_id}/{model_version.run_id}/artifacts"
+                model_uri = self.client.get_model_version_download_uri(name=model.name, version=version.version)
 
                 remote_model_info = mlflow.models.get_model_info(model_uri)
                 signature = remote_model_info.signature
