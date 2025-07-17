@@ -68,9 +68,7 @@ class Client:
                     "output_examples": None,
                 }
 
-                model_uri = self.client.get_model_version_download_uri(name=model.name, version=version.version)
-
-                remote_model_info = mlflow.models.get_model_info(model_uri)
+                remote_model_info = mlflow.models.get_model_info(f"models:/{model.name}/{version.version}")
                 signature = remote_model_info.signature
 
                 if signature:
